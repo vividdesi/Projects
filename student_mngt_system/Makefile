@@ -1,29 +1,47 @@
-CC=gcc
-DEBUGFLAGS=-g -O0
-CFLAGS=-Wall
+# Compiler
+CC = gcc
 
-all:program
+# Compiler flags
+CFLAGS = -Wall -Iinclude
+DEBUGFLAGS = -g -O0 -Wall -Iinclude
 
-main.o:main.c header.h
-	${CC} ${CFLAGS}  -c main.c
+# Source files
+SRCS = src/main.c src/functions.c src/insert.c src/delete.c
 
-functions.o:functions.c header.h
-	${CC}  ${CFLAGS} -c functions.c
+# Object files
+OBJS = main.o functions.o insert.o delete.o
 
-insert.o:insert.c header.h
-	${CC} ${CFLAGS} -c insert.c
+# Target executable
+TARGET = program
+DEBUG_TARGET = Debug_project
 
-delete.o:delete.c header.h
-	${CC} ${CFLAGS} -c delete.c
+# Default target
+all: $(TARGET)
 
+# Compile object files
+main.o: src/main.c include/header.h
+	$(CC) $(CFLAGS) -c src/main.c -o main.o
 
-program:main.o functions.o insert.o delete.o
-	${CC} ${CFLAGS} main.o functions.o insert.o delete.o -o program
+functions.o: src/functions.c include/header.h
+	$(CC) $(CFLAGS) -c src/functions.c -o functions.o
 
-Debug:main.c functions.c insert.c delete.c
-	${CC} ${DEBUGFLAGS} main.c insert.c functions.c delete.c -o Debug_project
+insert.o: src/insert.c include/header.h
+	$(CC) $(CFLAGS) -c src/insert.c -o insert.o
 
-object:
-	rm -rf *.o
+delete.o: src/delete.c include/header.h
+	$(CC) $(CFLAGS) -c src/delete.c -o delete.o
+
+# Link object files to create executable
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
+
+# Debug target (compile all source files directly with debug flags)
+Debug: 
+	$(CC) $(DEBUGFLAGS) $(SRCS) -o $(DEBUG_TARGET)
+
+# Clean object files and executables
 clean:
-	rm -rf *.o program
+	rm -f *.o $(TARGET) $(DEBUG_TARGET)
+
+.PHONY: all Debug clean
+
